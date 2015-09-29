@@ -1,5 +1,5 @@
 #include "Common.h"
-
+#include "Graphics.h"
 void render()
 {
 
@@ -8,7 +8,8 @@ void render()
 void update()
 {
 
-}
+}
+
 
 int main(int argc, char * arg[])
 {
@@ -27,10 +28,15 @@ int main(int argc, char * arg[])
 		640, //width,inpixels
 		480, //height,inpixels
 		SDL_WINDOW_OPENGL //flags
-		);	//Create an OpenGL context associated with the window.
-	SDL_GLContext glcontext = SDL_GL_CreateContext(window);	//Initialisation
+		);
+	//Create an OpenGL context associated with the window.
+	SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+
+	//Initialisation
 	//CallourInitOpenGLFunction
-	initOpenGL();	//ValuetoholdtheeventgeneratedbySDL
+	initOpenGL();
+
+	//ValuetoholdtheeventgeneratedbySDL
 	SDL_Event event;
 	//GameLoop
 	while (run)
@@ -50,7 +56,9 @@ int main(int argc, char * arg[])
 
 		//Call swap so that our GL back buffer is displayed
 		SDL_GL_SwapWindow(window);
-	}	SDL_DestroyWindow(window);
+	}
+
+	SDL_DestroyWindow(window);
 	SDL_Quit();
 
     return 0;
