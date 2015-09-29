@@ -2,6 +2,23 @@
 #include "Vertices.h"
 #include "Common.h"
 
+//Function to initialise OpenGL
+void initOpenGL()
+{
+	//Smoothshading
+	glShadeModel(GL_SMOOTH);
+	//clearthebackgroundtoblack
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	//Clearthedepthbufferto1.0
+	glClearDepth(1.0f);
+	//Enabledepthtesting
+	glEnable(GL_DEPTH_TEST);
+	//Thedepthtesttouse
+	glDepthFunc(GL_LEQUAL);
+	//Turnonbestperspectivecorrection
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+}
+
 string getRendererCapsAsString()
 {
 	stringstream stringStream;

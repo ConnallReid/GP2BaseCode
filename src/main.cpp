@@ -26,8 +26,11 @@ int main(int argc, char * arg[])
 		SDL_WINDOWPOS_CENTERED,//yposition,centered
 		640, //width,inpixels
 		480, //height,inpixels
-		0 //flags
-		);	//ValuetoholdtheeventgeneratedbySDL
+		SDL_WINDOW_OPENGL //flags
+		);	//Create an OpenGL context associated with the window.
+	SDL_GLContext glcontext = SDL_GL_CreateContext(window);	//Initialisation
+	//CallourInitOpenGLFunction
+	initOpenGL();	//ValuetoholdtheeventgeneratedbySDL
 	SDL_Event event;
 	//GameLoop
 	while (run)
@@ -38,12 +41,22 @@ int main(int argc, char * arg[])
 			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE){
 				//setourbooleanwhichcontrolsthelooptofalse
 				run = false;
-			}
+			}
 		}
+		//Update
 		update();
+		//Then Draw
 		render();
+
+		//Call swap so that our GL back buffer is displayed
+		SDL_GL_SwapWindow(window);
 	}	SDL_DestroyWindow(window);
 	SDL_Quit();
 
     return 0;
+
+	//cleanup,reverseorder!!!
+	SDL_GL_DeleteContext(glcontext);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }
