@@ -3,8 +3,6 @@
 
 #include "Common.h"
 
-
-
 struct Vertex;
 
 void initOpenGL();

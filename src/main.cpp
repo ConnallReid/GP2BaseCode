@@ -1,8 +1,26 @@
 #include "Common.h"
 #include "Graphics.h"
+
 void render()
 {
+	//Set the clear colour(background)
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	//clear the colour and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//Switch to Model View
+	glMatrixMode(GL_MODELVIEW);
+	//Reset using the Identity Matrix
+	glLoadIdentity();
+	//Translate to -5.0f on z-axis
+	glTranslatef(0.0f, 0.0f, -5.0f);
+	//Begin drawing triangles
+	glBegin(GL_TRIANGLES);
+		glColor3f(1.0f, 0.0f, 0.0f);//Colour of the vertices
+		glVertex3f(0.0f, 1.0f, 0.0f);//Top
+		glVertex3f(-1.0f, -1.0f, 0.0f);//Bottom Left
+		glVertex3f(1.0f, -1.0f, 0.0f);//Bottom Right
+	glEnd();
 }
 
 void update()
@@ -35,6 +53,8 @@ int main(int argc, char * arg[])
 	//Initialisation
 	//CallourInitOpenGLFunction
 	initOpenGL();
+	//Set our viewport
+	setViewport(640, 480);
 
 	//ValuetoholdtheeventgeneratedbySDL
 	SDL_Event event;
