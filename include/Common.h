@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -11,11 +12,5 @@ using namespace std;
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-
-#ifdef __APPLE__
-#include <OpenGL/glu.h>
-#elif WIN32
-#include <gl\GLU.h>
-#endif
 
 #endif
