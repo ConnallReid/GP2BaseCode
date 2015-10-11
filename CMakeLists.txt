@@ -8,10 +8,10 @@ find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 
-add_executable(GP2BaseCode src/main.cpp src/Graphics.cpp src/Shader.cpp include/Common.h include/Graphics.h include/Vertices.h include/Shader.h)
+add_executable(GP2BaseCode src/main.cpp src/Graphics.cpp src/Shader.cpp include/Common.h include/Graphics.h include/Vertices.h include/Shader.h  assets/shaders/simpleVS.glsl assets/shaders/simpleFS.glsl )
 include_directories(GP2BaseCode include/ ${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS})
 # create the program
-target_link_libraries(GP2BaseCode ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} )
+target_link_libraries(GP2BaseCode ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 if (MSVC)
 add_custom_command(TARGET GP2BaseCode  POST_BUILD
@@ -21,4 +21,5 @@ endif (MSVC)
 
 add_custom_command(TARGET GP2BaseCode POST_BUILD 
 					COMMAND ${CMAKE_COMMAND} -E copy_directory 
-						${CMAKE_SOURCE_DIR}/assets $<TARGER_FILE_DIR:GP2BaseCode>/assets)
+						${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:GP2BaseCode>/assets)
+
