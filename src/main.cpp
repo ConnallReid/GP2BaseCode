@@ -100,6 +100,8 @@ void initScene()
   glDeleteShader(vertexShaderProgram);
   glDeleteShader(fragmentShaderProgram);
 
+  glBindAttribLocation(shaderProgram, 0, "vertexPosition");
+
 }
 
 void cleanUp()
@@ -117,6 +119,8 @@ void render()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),GL_UNSIGNED_INT,0);
+
+	glUseProgram(shaderProgram);
 }
 
 int main(int argc, char * arg[])
