@@ -7,30 +7,30 @@ GLuint shaderProgram = 0;
 
 Vertex verts[]={
 //Front
-{ -0.5f, 0.5f, 0.5f,
-    1.0f, 0.0f, 1.0f, 1.0f },// Top Left
+{ vec3(-0.5f, 0.5f, 0.5f),
+    vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
 
-{ -0.5f, -0.5f, 0.5f,
-    1.0f, 1.0f, 0.0f, 1.0f },// Bottom Left
+{ vec3(-0.5f, -0.5f, 0.5f),
+    vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
 
-{ 0.5f, -0.5f, 0.5f,
-    0.0f, 1.0f, 1.0f, 1.0f }, //Bottom Right
+{ vec3(0.5f, -0.5f, 0.5f),
+    vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
 
-{ 0.5f, 0.5f, 0.5f,
-    1.0f, 0.0f, 1.0f, 1.0f },// Top Right
+{ vec3(0.5f, 0.5f, 0.5f),
+    vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
 
 //back
-{ -0.5f, 0.5f, -0.5f,
-    1.0f, 0.0f, 1.0f, 1.0f },// Top Left
+{ vec3(-0.5f, 0.5f, -0.5f),
+    vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
 
-{ -0.5f, -0.5f, -0.5f,
-    1.0f, 1.0f, 0.0f, 1.0f },// Bottom Left
+{ vec3(-0.5f, -0.5f, -0.5f),
+    vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
 
-{ 0.5f, -0.5f, -0.5f,
-    0.0f, 1.0f, 1.0f, 1.0f }, //Bottom Right
+{ vec3(0.5f, -0.5f, -0.5f),
+    vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
 
-{ 0.5f, 0.5f, -0.5f,
-    1.0f, 0.0f, 1.0f, 1.0f },// Top Right
+{ vec3(0.5f, 0.5f, -0.5f),
+    vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
 
 };
 
@@ -134,10 +134,25 @@ void render()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glUseProgram(shaderProgram);
+
+	GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+
 	glBindVertexArray(VAO);
 
     glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),GL_UNSIGNED_INT,0);
 	
+}
+
+void update()
+{
+	projMatrix = glm::perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
+
+	viewMatrix = glm::lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
+	worldMatrix = glm::translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
+
+	MVPMatrix = projMatrix*viewMatrix*worldMatrix;
 }
 
 int main(int argc, char * arg[])
