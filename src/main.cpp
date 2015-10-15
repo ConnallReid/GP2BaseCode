@@ -66,9 +66,13 @@ float zRotation=0.0f;
 
 GLuint VBO;
 GLuint EBO;
+GLuint VAO;
 
 void initScene()
 {
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
@@ -79,6 +83,10 @@ void initScene()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   //Copy Index data to the EBO
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  //Tell the shader that 0 is the position element
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
 
   GLuint vertexShaderProgram = 0;
   string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
@@ -108,6 +116,7 @@ void cleanUp()
 {
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 }
 
@@ -118,9 +127,11 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),GL_UNSIGNED_INT,0);
-
 	glUseProgram(shaderProgram);
+	glBindVertexArray(VAO);
+
+    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),GL_UNSIGNED_INT,0);
+	
 }
 
 int main(int argc, char * arg[])
