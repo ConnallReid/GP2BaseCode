@@ -15,4 +15,11 @@ using namespace std;
 const string ASSET_PATH = "assets";
 const string SHADER_PATH = "/shaders";
 
+//maths headers
+#include <glm/glm.hpp>
+using namespace glm;
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #endif

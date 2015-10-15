@@ -68,6 +68,12 @@ GLuint VBO;
 GLuint EBO;
 GLuint VAO;
 
+//Matrices
+mat4 viewMatrix;
+mat4 projMatrix;
+mat4 worldMatrix;
+mat4 MVPMatrix;
+
 void initScene()
 {
 	glGenVertexArrays(1, &VAO);
