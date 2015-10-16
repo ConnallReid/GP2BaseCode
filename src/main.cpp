@@ -123,7 +123,7 @@ void cleanUp()
   glDeleteProgram(shaderProgram);
   glDeleteBuffers(1, &EBO);
   glDeleteBuffers(1, &VBO);
-  glDeleteVertexArrays(1,&VAO);
+  glDeleteVertexArrays(1, &VAO);
 }
 
 void update()
