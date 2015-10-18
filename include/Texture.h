@@ -4,6 +4,6 @@
 #include "Common.h"
 
 GLuint laodTextureFromFile(const string& filename);
-GLuint convertSDLSurfaceToTexture(SDL_Surface*surface);
+GLuint convertSDLSurfaceToTexture(SDL_Surface * surface);
 
 #endif
