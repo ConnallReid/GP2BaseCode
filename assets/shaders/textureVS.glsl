@@ -4,7 +4,6 @@ in vec3 vertexPosition;
 in vec2 vertexTexCoords;
 
 out vec2 vertexTexCoordsOut;
-
 uniform mat4 MVP;
 
 void main()
