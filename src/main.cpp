@@ -115,7 +115,7 @@ void initScene()
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3)));
 
-  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + (sizeof(vec4))));
 
   GLuint vertexShaderProgram=0;
@@ -135,6 +135,7 @@ void initScene()
   //Link attributes
   glBindAttribLocation(shaderProgram, 0, "vertexPosition");
   glBindAttribLocation(shaderProgram, 1, "vertexColour");
+  glBindAttribLocation(shaderProgram, 2, "vertexTexCoords");
 
   glLinkProgram(shaderProgram);
   checkForLinkErrors(shaderProgram);
@@ -145,7 +146,7 @@ void initScene()
 
 void cleanUp()
 {
-	glDeleteTextures(1, &textureMap);
+  glDeleteTextures(1, &textureMap);
   glDeleteProgram(shaderProgram);
   glDeleteBuffers(1, &EBO);
   glDeleteBuffers(1, &VBO);
@@ -174,9 +175,16 @@ void render()
     glUseProgram(shaderProgram);
 
     GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
-    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
 
-    glBindVertexArray( VAO );
+	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureMap);
+
+    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+	glUniform1i(texture0Location, 0);
+
+    glBindVertexArray(VAO);
 
     glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),GL_UNSIGNED_INT,0);
 }
@@ -197,7 +205,7 @@ int main(int argc, char * arg[])
 
 	int imageInitFlags = IMG_INIT_JPG | IMG_INIT_PNG;
 	int returnInitFlags = IMG_Init(imageInitFlags);
-	if (((returnInitFlags)& (imageInitFlags)) != imageInitFlags);
+	if (((returnInitFlags)& (imageInitFlags)) != imageInitFlags)
 	{
 		cout << "ERROR SDL_IMAGE Init" << IMG_GetError() << endl;
 	}
