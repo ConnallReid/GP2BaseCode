@@ -4,40 +4,32 @@
 #include "Shader.h"
 
 Vertex verts[]={
-//Front
-	{ vec2(0.0f,0.0f),
-		vec3(-0.5f, 0.5f, 0.5f),
-		  vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
+	//Front
+	{ vec3(-0.5f, 0.5f, 0.5f),
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f) },// Top Left
 
-	{ vec2(0.0f,1.0f),
-	    vec3(-0.5f, -0.5f, 0.5f),
-		  vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
+	{ vec3(-0.5f, -0.5f, 0.5f),
+	vec4(1.0f, 1.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },// Bottom Left
 
-	{ vec2(1.0f, 1.0f), 
-		vec3(0.5f, -0.5f, 0.5f),
-		  vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
+	{ vec3(0.5f, -0.5f, 0.5f),
+	vec4(0.0f, 1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) }, //Bottom Right
 
-	{ vec2(1.0f, 0.0f),
-		vec3(0.5f, 0.5f, 0.5f),
-		  vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
+	{ vec3(0.5f, 0.5f, 0.5f),
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(1.0f, 0.0f) },// Top Right
 
 
-//back
-	{ vec2(0.0f, 0.0f), 
-  	    vec3(-0.5f, 0.5f, -0.5f),
-		  vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
+	//back
+	{ vec3(-0.5f, 0.5f, -0.5f),
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f) },// Top Left
 
-	{ vec2(0.0f, 1.0f), 
-		vec3(-0.5f, -0.5f, -0.5f),
-		  vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
+	{ vec3(-0.5f, -0.5f, -0.5f),
+	vec4(1.0f, 1.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },// Bottom Left
 
-	{ vec2(1.0f, 1.0f), 
-		vec3(0.5f, -0.5f, -0.5f),
-		  vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
+	{ vec3(0.5f, -0.5f, -0.5f),
+	vec4(0.0f, 1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) }, //Bottom Right
 
-	{ vec2(1.0f, 0.0f), 
-		vec3(0.5f, 0.5f, -0.5f),
-		  vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
+	{ vec3(0.5f, 0.5f, -0.5f),
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(1.0f, 0.0f) },// Top Right
 
 };
 
@@ -99,10 +91,10 @@ void initScene()
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec2)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3)));
 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec2)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + (sizeof(vec4))));
 
   GLuint vertexShaderProgram=0;
   string vsPath = ASSET_PATH + SHADER_PATH + "/simpleColourVS.glsl";
