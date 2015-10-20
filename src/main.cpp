@@ -71,15 +71,15 @@ GLuint EBO;
 GLuint VAO;
 GLuint shaderProgram;
 
-GLuint diffuseMap;
+GLuint textureMap;
 
 void initScene()
 {
 	//load texture & bind
 	string texturePath = ASSET_PATH + TEXTURE_PATH + "/texture.png";
-	diffuseMap = loadTextureFromFile(texturePath);
+	textureMap = loadTextureFromFile(texturePath);
 
-	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glBindTexture(GL_TEXTURE_2D, textureMap);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
@@ -134,11 +134,38 @@ void initScene()
 	//now we can delete the VS & FS Programs
 	glDeleteShader(vertexShaderProgram);
 	glDeleteShader(fragmentShaderProgram);
+
+	textureMap = loadTextureFromFile(texturePath);
+
+  //Generate Vertex Array
+  glGenVertexArrays(1,&VAO);
+  glBindVertexArray( VAO );
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+  //create buffer
+  glGenBuffers(1, &EBO);
+  //Make the EBO active
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  //Copy Index data to the EBO
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  //Tell the shader that 0 is the position element
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
+
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3)));
+
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + (sizeof(vec4))));
+
 }
 
 void cleanUp()
 {
-	glDeleteTextures(1, &diffuseMap);
+	glDeleteTextures(1, &textureMap);
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &EBO);
 	glDeleteBuffers(1, &VBO);
@@ -170,7 +197,7 @@ void render()
 	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	glBindTexture(GL_TEXTURE_2D, textureMap);
 
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
 	glUniform1i(texture0Location, 0);
