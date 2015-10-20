@@ -128,6 +128,7 @@ void initScene()
   //Link attributes
   glBindAttribLocation(shaderProgram, 0, "vertexPosition");
   glBindAttribLocation(shaderProgram, 1, "vertexColour");
+  glBindAttribLocation(shaderProgram, 2, "vertexTexCoords");
 
   glLinkProgram(shaderProgram);
   checkForLinkErrors(shaderProgram);
@@ -167,7 +168,13 @@ void render()
     glUseProgram(shaderProgram);
 
     GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
+	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureMap);
+
     glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+	glUniform1i(texture0Location, 0);
 
     glBindVertexArray( VAO );
 
