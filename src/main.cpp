@@ -28,7 +28,7 @@ MeshData currentMesh;
 void initScene()
 {
 
-	string modelPath = ASSET_PATH + MODEL_PATH + "/armoredrecon.fbx";
+	string modelPath = ASSET_PATH + MODEL_PATH + "/Utah-Teapot.fbx";
 	loadFBXFromFile(modelPath, &currentMesh);
 	//Generate Vertex Array
 	glGenVertexArrays(1, &VAO);
