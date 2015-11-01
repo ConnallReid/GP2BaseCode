@@ -14,6 +14,9 @@ mat4 projMatrix;
 mat4 worldMatrix;
 mat4 MVPMatrix;
 
+vec4 ambientMaterialColour(0.3f, 0.3f, 0.3f, 1.0f);
+vec4 ambientLightColour(1.0f, 1.0f, 1.0f, 1.0f);
+
 GLuint VBO;
 GLuint EBO;
 GLuint VAO;
@@ -53,12 +56,12 @@ void initScene()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec4)));
 
 	GLuint vertexShaderProgram = 0;
-	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
+	string vsPath = ASSET_PATH + SHADER_PATH + "/ambientVS.glsl";
 	vertexShaderProgram = loadShaderFromFile(vsPath, VERTEX_SHADER);
 	checkForCompilerErrors(vertexShaderProgram);
 
 	GLuint fragmentShaderProgram = 0;
-	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
+	string fsPath = ASSET_PATH + SHADER_PATH + "/ambientFS.glsl";
 	fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
 	checkForCompilerErrors(fragmentShaderProgram);
 
@@ -110,9 +113,12 @@ void render()
 	glUseProgram(shaderProgram);
 
 	GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
+	GLint ambientMaterialColourLocation = glGetUniformLocation(shaderProgram, "ambientMaterialColour");
+	GLint ambientLightColourLocation = glGetUniformLocation(shaderProgram, "ambientLightColour");
 
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
-
+	glUniformMatrix4fv(ambientMaterialColourLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+	glUniformMatrix4fv(ambientLightColourLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
 
 	glBindVertexArray(VAO);
 
