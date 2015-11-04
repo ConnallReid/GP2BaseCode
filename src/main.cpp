@@ -14,9 +14,6 @@ mat4 projMatrix;
 mat4 worldMatrix;
 mat4 MVPMatrix;
 
-vec4 ambientMaterialColour(0.3f, 0.3f, 0.3f, 1.0f);
-vec4 ambientLightColour(1.0f, 1.0f, 1.0f, 1.0f);
-
 GLuint VBO;
 GLuint EBO;
 GLuint VAO;
@@ -24,11 +21,13 @@ GLuint shaderProgram;
 
 MeshData currentMesh;
 
+vec4 ambientMaterialColour(0.3f, 0.3f, 0.3f, 1.0f);
+vec4 ambientLightColour(1.0f, 1.0f, 1.0f, 1.0f);
 
 void initScene()
 {
 
-	string modelPath = ASSET_PATH + MODEL_PATH + "/Utah-Teapot.fbx";
+	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
 	loadFBXFromFile(modelPath, &currentMesh);
 	//Generate Vertex Array
 	glGenVertexArrays(1, &VAO);
@@ -94,7 +93,7 @@ void update()
 {
 	projMatrix = perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
 
-	viewMatrix = lookAt(vec3(0.0f, 0.0f, 20.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	viewMatrix = lookAt(vec3(0.0f, 25.0f, 50.0f), vec3(0.0f, 10.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	worldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 
@@ -117,8 +116,8 @@ void render()
 	GLint ambientLightColourLocation = glGetUniformLocation(shaderProgram, "ambientLightColour");
 
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
-	glUniformMatrix4fv(ambientMaterialColourLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
-	glUniformMatrix4fv(ambientLightColourLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
+	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
 
 	glBindVertexArray(VAO);
 
@@ -150,7 +149,7 @@ int main(int argc, char * arg[])
 		std::cout << "ERROR	TTF_Init:	" << TTF_GetError();
 	}
 
-	//Request opengl 4.1 context, Core Context
+	//Request opengl 3.1 context, Core Context
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
