@@ -34,6 +34,16 @@ float specularPower=25.0f;
 vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
 vec3 cameraPosition=vec3(0.0f,10.0f,50.0f);
 
+GLuint FBOTexture;
+GLuint FBODepthBuffer;
+GLuint frameBufferObject;
+GLuint fullScreenVAO;
+GLuint fullScreenVBO;
+GLuint fullScreenShaderProgram;
+
+const int FRAME_BUFFER_WIDTH = 640;
+const int FRAME_BUFFER_HEIGHT = 480;
+
 void initScene()
 {
 	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
@@ -186,9 +196,9 @@ int main(int argc, char * arg[])
 		std::cout << "ERROR	TTF_Init:	" << TTF_GetError();
 	}
 
-	//Request opengl 4.1 context, Core Context
+	//Request opengl 3.1 context, Core Context
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
 	//Create a window
