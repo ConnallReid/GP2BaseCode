@@ -267,3 +267,7 @@ int main(int argc, char * arg[])
 
 	return 0;
 }
+
+void createFrameBuffer(){
+
+}
