@@ -71,6 +71,23 @@ void createFrameBuffer(){
 	if (status != GL_FRAMEBUFFER_COMPLETE){
 		cout << "Issue with Framebuffers" << endl;
 	}
+
+	float vertices[] = {
+		-1, -1,
+		 1, -1,
+		-1,  1,
+		 1,  1,
+	};
+
+	glGenVertexArrays(1, &fullScreenVAO);
+	glBindVertexArray(fullScreenVAO);
+
+	glGenBuffers(1, &fullScreenVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, fullScreenVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
 
