@@ -113,6 +113,14 @@ void createFrameBuffer(){
 	glDeleteShader(fragmentShaderProgram);
 }
 
+void cleanUpFramebuffer(){
+	glDeleteTextures (1, &FBOTexture);
+	glDeleteRenderbuffers (1, &FBODepthBuffer);
+	glDeleteFramebuffers (1, &frameBufferObject);
+	glDeleteVertexArrays (1, &fullScreenVAO);
+	glDeleteBuffers (1, &fullScreenVBO);
+	glDeleteProgram (fullScreenShaderProgram);
+}
 
 void initScene()
 {
@@ -183,6 +191,7 @@ void cleanUp()
 	glDeleteBuffers(1, &EBO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO);
+	cleanUpFramebuffer();
 }
 
 void update()
