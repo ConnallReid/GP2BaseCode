@@ -88,6 +88,29 @@ void createFrameBuffer(){
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	GLuint vertexShaderProgram = 0;
+	string vsPath = ASSET_PATH + SHADER_PATH + "/SimplePostProcessVS.glsl";
+	vertexShaderProgram = loadShaderFromFile(vsPath, VERTEX_SHADER);
+	checkForCompilerErrors(vertexShaderProgram);
+
+	GLuint fragmentShaderProgram = 0;
+	string fsPath = ASSET_PATH + SHADER_PATH + "/SimplePostProcessFS.glsl";
+	fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
+	checkForCompilerErrors(fragmentShaderProgram);
+
+	fullScreenShaderProgram = glCreateProgram();
+	glAttachShader(fullScreenShaderProgram, vertexShaderProgram);
+	glAttachShader(fullScreenShaderProgram, fragmentShaderProgram);
+
+	//Link attributes
+	glBindAttribLocation(fullScreenShaderProgram, 0, "vertexPosition");
+
+	glLinkProgram(fullScreenShaderProgram);
+	checkForLinkErrors(fullScreenShaderProgram);
+
+	glDeleteShader(vertexShaderProgram);
+	glDeleteShader(fragmentShaderProgram);
 }
 
 
