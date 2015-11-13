@@ -205,8 +205,7 @@ void update()
 	MVPMatrix = projMatrix*viewMatrix*worldMatrix;
 }
 
-void render()
-{
+void renderScene(){
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
 	//Set the clear colour(background)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -246,10 +245,14 @@ void render()
 	glUniform1f(specularPowerLocation, specularPower);
 	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
 
-
 	glBindVertexArray(VAO);
 
 	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
+}
+
+void render()
+{
+	renderScene();
 }
 
 int main(int argc, char * arg[])
