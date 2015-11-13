@@ -32,7 +32,7 @@ vec4 specularMaterialColour=vec4(1.0f,1.0f,1.0f,1.0f);
 float specularPower=25.0f;
 
 vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-vec3 cameraPosition=vec3(0.0f,40.0f,50.0f);
+vec3 cameraPosition=vec3(0.0f,50.0f,50.0f);
 
 GLuint FBOTexture;
 GLuint FBODepthBuffer;
@@ -250,9 +250,30 @@ void renderScene(){
 	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
 }
 
+void renderPostProcessing(){
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//Set the clear colour(background)
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//clear the colour and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glUseProgram(fullScreenShaderProgram);
+
+	GLint texture0Location = glGetUniformLocation(fullScreenShaderProgram, "texture0");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, FBOTexture);
+	glUniform1i(texture0Location, 0);
+
+	glBindVertexArray(fullScreenVAO);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
 void render()
 {
 	renderScene();
+	renderPostProcessing();
 }
 
 int main(int argc, char * arg[])
