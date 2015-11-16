@@ -132,7 +132,7 @@ void initScene()
 	gameObject->createBuffer(cubeVerts, 8, cubeIndices, 36);
 
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
-	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
+	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
 	gameObject->loadShader(vsPath, fsPath);
 }
 
@@ -172,7 +172,7 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Gluint currentShaderProgram=gameObject->getShaderProgram;
+	GLuint currentShaderProgram = gameObject->getShaderProgram();
 
 	glUseProgram(currentShaderProgram);
 
