@@ -1,6 +1,10 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#endif
+#ifndef _COMMON_H
+#define _COMMON_H
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -28,6 +32,6 @@ const string ASSET_PATH = "assets";
 const string SHADER_PATH = "/shaders";
 const string TEXTURE_PATH = "/textures";
 const string FONT_PATH = "/fonts";
-const string MODEL_PATH="/models";
+const string MODEL_PATH = "/models";
 
 #endif

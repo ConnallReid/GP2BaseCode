@@ -1,4 +1,7 @@
 #include "Common.h"
+
+
+#include "Common.h"
 #include "Graphics.h"
 #include "Vertices.h"
 #include "Shader.h"
@@ -24,18 +27,18 @@ GLuint shaderProgram;
 
 MeshData currentMesh;
 
-vec4 ambientMaterialColour=vec4(0.2f,0.2f,0.2f,1.0f);
-vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
+vec4 ambientMaterialColour = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 diffuseMaterialColour=vec4(1.0f,0.0f,0.0f,1.0f);
+vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 diffuseMaterialColour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 specularMaterialColour=vec4(1.0f,1.0f,1.0f,1.0f);
-float specularPower=25.0f;
+vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+float specularPower = 25.0f;
 
-vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-vec3 cameraPosition=vec3(0.0f,40.0f,50.0f);
+vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
+vec3 cameraPosition = vec3(0.0f, 40.0f, 50.0f);
 
 //for Framebuffer
 GLuint FBOTexture;
@@ -69,8 +72,8 @@ void createFramebuffer()
 
 	glGenFramebuffers(1, &frameBufferObject);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, FBOTexture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, FBODepthBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FBOTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, FBODepthBuffer);
 
 	GLenum status;
 	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
