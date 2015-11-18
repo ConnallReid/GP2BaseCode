@@ -4,6 +4,9 @@
 #include "Common.h"
 #include "Vertices.h"
 
+const int numberOfCubeVerts = 8;
+const int numberOfCubeIndices = 36;
+
 Vertex cubeVerts[] = {
 	//Front
 	{ vec3(-0.5f, 0.5f, 0.5f),

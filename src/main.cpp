@@ -9,13 +9,15 @@
 #include "GameObject.h"
 #include "Cube.h"
 
-shared_ptr<GameObject> gameObject;
+
 
 //matrices
 mat4 viewMatrix;
 mat4 projMatrix;
 mat4 worldMatrix;
 mat4 MVPMatrix;
+
+shared_ptr<GameObject> gameObject;
 
 GLuint VBO;
 GLuint EBO;
@@ -24,7 +26,7 @@ GLuint shaderProgram;
 
 MeshData currentMesh;
 
-vec4 ambientMaterialColour = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+vec4 ambientMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -107,7 +109,7 @@ void createFramebuffer()
 	checkForCompilerErrors(vertexShaderProgram);
 
 	GLuint fragmentShaderProgram = 0;
-	string fsPath = ASSET_PATH + SHADER_PATH + "/colourFilterFS.glsl";
+	string fsPath = ASSET_PATH + SHADER_PATH + "/simplePostProcessFS.glsl";
 	fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
 	checkForCompilerErrors(fragmentShaderProgram);
 
@@ -129,7 +131,7 @@ void initScene()
 {
 	createFramebuffer();
 	gameObject = shared_ptr<GameObject>(new GameObject);
-	gameObject->createBuffer(cubeVerts, 8, cubeIndices, 36);
+	gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
 
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
 	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
@@ -172,44 +174,17 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	GLint currentShaderProgram=gameObject->getShaderProgram();
+	MVPMatrix = projMatrix*viewMatrix*gameObject->getModelMatrix();
 
+	GLint currentShaderProgram = gameObject->getShaderProgram();
 	glUseProgram(currentShaderProgram);
 
 	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
-
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
 
-	GLint ambientLightColourLocation = glGetUniformLocation(currentShaderProgram, "ambientLightColour");
-	GLint ambientMaterialColourLocation = glGetUniformLocation(currentShaderProgram, "ambientMaterialColour");
+	glBindVertexArray(gameObject->getVertexArrayObject());
 
-	GLint diffuseLightColourLocation = glGetUniformLocation(currentShaderProgram, "diffuseLightColour");
-	GLint diffuseLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "diffuseMaterialColour");
-	GLint lightDirectionLocation = glGetUniformLocation(currentShaderProgram, "lightDirection");
-
-	GLint specularLightColourLocation = glGetUniformLocation(currentShaderProgram, "specularLightColour");
-	GLint specularLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "specularMaterialColour");
-	GLint specularPowerLocation = glGetUniformLocation(currentShaderProgram, "specularPower");
-	GLint cameraPositionLocation = glGetUniformLocation(currentShaderProgram, "cameraPosition");
-
-	GLint modelLocation = glGetUniformLocation(shaderProgram, "Model");
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(worldMatrix));
-
-	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
-	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
-
-	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
-	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(diffuseMaterialColour));
-	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
-
-	glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
-	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(specularMaterialColour));
-	glUniform1f(specularPowerLocation, specularPower);
-	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
-
-	glBindVertexArray(VAO);
-
-	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, gameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 }
 
 void renderPostProcessing()
