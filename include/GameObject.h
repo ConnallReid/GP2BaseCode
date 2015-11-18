@@ -16,7 +16,7 @@ public:
 	void loadShader(const string& vsFilename, const string& fsFilename);
 
 	GLuint getShaderProgram(){
-		return m_shaderProgram;
+		return m_ShaderProgram;
 	}
 private:
 		GLuint m_VBO;
