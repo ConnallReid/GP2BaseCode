@@ -1,10 +1,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#endif
-#ifndef _COMMON_H
-#define _COMMON_H
-
 #include <iostream>
 #include <string>
 #include <sstream>
