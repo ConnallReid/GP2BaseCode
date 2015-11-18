@@ -46,7 +46,7 @@ private:
 		vec4 m_ambientMaterial;
 		vec4 m_diffuseMaterial;
 		vec4 m_specularMaterial;
-		float specularPower = 25.0f;
+		float m_specularPower;
 protected:
 
 };

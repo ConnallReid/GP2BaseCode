@@ -16,13 +16,13 @@ GameObject::GameObject(){
 	m_ambientMaterial = vec4(0.2f,0.2f,0.2f,1.0f);
 	m_diffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	m_specularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	specularPower = 0.0f;
+	m_specularPower = 25.0f;
 }
 GameObject::~GameObject(){
-	glDeleteProgram(m_shaderProgram);
-	glDeleteBuffers(1, &m_EBO);
 	glDeleteBuffers(1, &m_VBO);
+	glDeleteBuffers(1, &m_EBO);
 	glDeleteVertexArrays(1, &m_VAO);
+	glDeleteProgram(m_shaderProgram);
 }
 
 void GameObject::update(){
@@ -35,6 +35,9 @@ void GameObject::update(){
 }
 
 void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pIndices, int numIndices){
+	m_NoOfIndices = numIndices;
+	m_NoOfVertices = numVerts;
+
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
 	glGenBuffers(1, &m_VBO);
@@ -64,12 +67,11 @@ void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pIndices, int n
 }
 
 void GameObject::loadShader(const string& vsFilename, const string& fsFilename){
-	GLuint vertexShaderProgram = 0;
-	vertexShaderProgram = loadShaderFromFile(vsFilename, VERTEX_SHADER);
+
+	GLuint vertexShaderProgram = loadShaderFromFile(vsFilename, VERTEX_SHADER);
 	checkForCompilerErrors(vertexShaderProgram);
 
-	GLuint fragmentShaderProgram = 0;
-	fragmentShaderProgram = loadShaderFromFile(fsFilename, FRAGMENT_SHADER);
+	GLuint fragmentShaderProgram = loadShaderFromFile(fsFilename, FRAGMENT_SHADER);
 	checkForCompilerErrors(fragmentShaderProgram);
 
 	m_shaderProgram = glCreateProgram();

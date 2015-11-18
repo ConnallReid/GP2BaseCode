@@ -14,30 +14,16 @@
 //matrices
 mat4 viewMatrix;
 mat4 projMatrix;
-mat4 worldMatrix;
 mat4 MVPMatrix;
 
 shared_ptr<GameObject> gameObject;
 
-GLuint VBO;
-GLuint EBO;
-GLuint VAO;
-GLuint shaderProgram;
-
-MeshData currentMesh;
-
-vec4 ambientMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-
-vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 vec4 diffuseMaterialColour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-
 vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-vec4 specularMaterialColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-float specularPower = 25.0f;
 
 vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
-vec3 cameraPosition = vec3(0.0f, 40.0f, 50.0f);
+vec3 cameraPosition = vec3(0.0f, 0.0f, 10.0f);
 
 //for Framebuffer
 GLuint FBOTexture;
@@ -151,10 +137,6 @@ void cleanUpFramebuffer()
 void cleanUp()
 {
 	cleanUpFramebuffer();
-	glDeleteProgram(shaderProgram);
-	glDeleteBuffers(1, &EBO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
 }
 
 void update()
