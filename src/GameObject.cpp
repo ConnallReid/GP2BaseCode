@@ -20,6 +20,9 @@ GameObject::GameObject()
 	m_DiffuseMaterial=vec4(0.8f,0.8f,0.8f,1.0f);
 	m_SpecularMaterial=vec4(1.0f,1.0f,1.0f,1.0f);
 	m_SpecularPower=25.0f;
+
+	parentGameObject = NULL;
+	ChildObject.clear();
 }
 
 GameObject::~GameObject()
@@ -40,7 +43,18 @@ void GameObject::update()
 		rotate(mat4(1.0f), m_Rotation.y, vec3(0.0f, 1.0f, 0.0f))*
 		rotate(mat4(1.0f), m_Rotation.z, vec3(0.0f, 0.0f, 1.0f));
 
+	mat4 parentModel(1.0f);
+	if (parentGameObject != NULL){
+		parentModel = parentGameObject->getModelMatrix();
+	}
+
 	m_ModelMatrix = scaleMatrix*rotationMatrix*translationMatrix;
+	m_ModelMatrix *= parentModel;
+
+	for (auto i = ChildObject.begin(); i != ChildObject.end(); i++)
+	{
+		(*i)->update();
+	}
 }
 
 void GameObject::createBuffers(Vertex * pVerts, int numVerts, int *pIndices, int numIndices)
