@@ -17,6 +17,8 @@ mat4 MVPMatrix;
 
 shared_ptr<GameObject> gameObject;
 
+
+
 vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
 vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
 vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
@@ -32,6 +34,7 @@ GLuint frameBufferObject;
 GLuint fullScreenVAO;
 GLuint fullScreenVBO;
 GLuint fullScreenShaderProgram;
+GLuint currentShaderProgram = 0;
 const int FRAME_BUFFER_WIDTH = 640;
 const int FRAME_BUFFER_HEIGHT = 480;
 
@@ -51,9 +54,7 @@ void createFramebuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, NULL);
-
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glGenRenderbuffers(1, &FBODepthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, FBODepthBuffer);
@@ -71,9 +72,9 @@ void createFramebuffer()
 	}
 	float vertices[] = {
 		-1, -1,
-		1, -1,
-		-1, 1,
-		1, 1,
+		 1, -1,
+		-1,  1,
+		 1,  1,
 
 	};
 
@@ -163,6 +164,26 @@ void update()
 	gameObject->update();
 }
 
+void renderGameObject(shared_ptr<GameObject> currentGameObject){
+	MVPMatrix = projMatrix*viewMatrix*currentGameObject->getModelMatrix();
+
+
+	if (currentGameObject->getShaderProgram() > 0){
+		currentShaderProgram = gameObject->getShaderProgram();
+		glUseProgram(currentShaderProgram);
+	}
+
+	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
+
+	glBindVertexArray(currentGameObject->getVertexArrayObject());
+
+	glDrawElements(GL_TRIANGLES, currentGameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+
+	for (int i = 0; i < currentGameObject->getNumberOfChildern(); i++){
+		renderGameObject(currentGameObject->getChild(i));
+	}
+}
 
 void renderScene()
 {
@@ -172,17 +193,7 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	MVPMatrix = projMatrix*viewMatrix*gameObject->getModelMatrix();
-
-	GLuint currentShaderProgam = gameObject->getShaderProgram();
-	glUseProgram(currentShaderProgam);
-
-	GLint MVPLocation = glGetUniformLocation(currentShaderProgam, "MVP");
-	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
-
-	glBindVertexArray(gameObject->getVertexArrayObject());
-
-	glDrawElements(GL_TRIANGLES, gameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+	renderGameObject(gameObject);
 }
 
 void renderPostQuad()
@@ -211,6 +222,8 @@ void renderPostQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
+
+
 
 void render()
 {
