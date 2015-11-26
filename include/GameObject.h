@@ -4,29 +4,18 @@
 #include "Common.h"
 #include "Vertices.h"
 
-
 class GameObject
 {
 public:
 	GameObject();
 	~GameObject();
 
-	GameObject* getParentGameObject(){
-		return parentGameObject;
-	}
-
-	int getNumberOfChildern(){
-		return ChildObject.size();
-	}
-
 	void update();
+
+	void addChild(shared_ptr<GameObject> child);
 
 	void createBuffers(Vertex * pVerts, int numVerts, int *pIndices, int numIndices);
 	void loadShader(const string& vsFilename, const string& fsFilename);
-
-	void addChild(shared_ptr<GameObject> gameobject){
-		ChildObject.push_back(gameobject);
-	}
 
 	void setPosition(const vec3& position)
 	{
@@ -43,9 +32,20 @@ public:
 		m_Scale = scale;
 	};
 
-	shared_ptr<GameObject> getChild(int child){
-		return ChildObject.at(child);
-	}
+	int getNumberOfChildren()
+	{
+		return m_ChildGameObjects.size();
+	};
+
+	GameObject * getParent()
+	{
+		return m_ParentGameObject;
+	};
+
+	shared_ptr<GameObject> getChild(int i)
+	{
+		return m_ChildGameObjects.at(i);
+	};
 
 	GLuint getVertexArrayObject()
 	{
@@ -91,8 +91,6 @@ public:
 	{
 		return m_NoOfVertices;
 	};
-
-
 private:
 	GLuint m_VBO;
 	GLuint m_EBO;
@@ -111,8 +109,8 @@ private:
 	vec4 m_SpecularMaterial;
 	float m_SpecularPower;
 
-	GameObject* parentGameObject;
-	vector<shared_ptr<GameObject>> ChildObject;
+	vector<shared_ptr<GameObject> > m_ChildGameObjects;
+	GameObject * m_ParentGameObject;
 };
 
 #endif

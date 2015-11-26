@@ -7,7 +7,6 @@
 #include "FBXLoader.h"
 #include "FileSystem.h"
 #include "GameObject.h"
-#include "Cube.h"
 
 //matrices
 mat4 viewMatrix;
@@ -15,17 +14,16 @@ mat4 projMatrix;
 
 mat4 MVPMatrix;
 
-shared_ptr<GameObject> gameObject;
+vector<shared_ptr<GameObject> > gameObjects;
+GLuint currentShaderProgam = 0;
 
+vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+float specularPower = 25.0f;
 
-
-vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-float specularPower=25.0f;
-
-vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-vec3 cameraPosition=vec3(0.0f,0.0f,10.0f);
+vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
+vec3 cameraPosition = vec3(0.0f, 10.0f, 50.0f);
 
 //for Framebuffer
 GLuint FBOTexture;
@@ -34,7 +32,6 @@ GLuint frameBufferObject;
 GLuint fullScreenVAO;
 GLuint fullScreenVBO;
 GLuint fullScreenShaderProgram;
-GLuint currentShaderProgram = 0;
 const int FRAME_BUFFER_WIDTH = 640;
 const int FRAME_BUFFER_HEIGHT = 480;
 
@@ -43,7 +40,7 @@ unsigned int lastTicks, currentTicks;
 float elapsedTime;
 float totalTime;
 
-vec2 screenResolution=vec2(FRAME_BUFFER_WIDTH,FRAME_BUFFER_HEIGHT);
+vec2 screenResolution = vec2(FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 
 void createFramebuffer()
 {
@@ -54,7 +51,9 @@ void createFramebuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, NULL);
+
 
 	glGenRenderbuffers(1, &FBODepthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, FBODepthBuffer);
@@ -63,8 +62,8 @@ void createFramebuffer()
 
 	glGenFramebuffers(1, &frameBufferObject);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D, FBOTexture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER, FBODepthBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FBOTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, FBODepthBuffer);
 
 	GLenum status;
 	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
@@ -72,9 +71,9 @@ void createFramebuffer()
 	}
 	float vertices[] = {
 		-1, -1,
-		 1, -1,
-		-1,  1,
-		 1,  1,
+		1, -1,
+		-1, 1,
+		1, 1,
 
 	};
 
@@ -121,17 +120,23 @@ void createFramebuffer()
 
 void initScene()
 {
-	currentTicks=SDL_GetTicks();
-	totalTime=0.0f;
-
-	gameObject=shared_ptr<GameObject>(new GameObject);
-
-	gameObject->createBuffers(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
-	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
-	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
-	gameObject->loadShader(vsPath, fsPath);
-
+	currentTicks = SDL_GetTicks();
+	totalTime = 0.0f;
 	createFramebuffer();
+	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
+	auto currentGameObject = loadFBXFromFile(modelPath);
+
+	string vsPath = ASSET_PATH + SHADER_PATH + "/specularVS.glsl";
+	string fsPath = ASSET_PATH + SHADER_PATH + "/specularFS.glsl";
+	currentGameObject->loadShader(vsPath, fsPath);
+	currentGameObject->setScale(vec3(0.3f, 0.3f, 0.3f));
+
+	gameObjects.push_back(currentGameObject);
+
+	modelPath = ASSET_PATH + MODEL_PATH + "/armoredrecon.fbx";
+	currentGameObject = loadFBXFromFile(modelPath);
+	currentGameObject->loadShader(vsPath, fsPath);
+	gameObjects.push_back(currentGameObject);
 
 }
 
@@ -148,40 +153,74 @@ void cleanUpFrambuffer()
 void cleanUp()
 {
 	cleanUpFrambuffer();
+	gameObjects.clear();
 }
 
 void update()
 {
-	lastTicks=currentTicks;
-	currentTicks=SDL_GetTicks();
+	lastTicks = currentTicks;
+	currentTicks = SDL_GetTicks();
 	elapsedTime = (currentTicks - lastTicks) / 1000.0f;
-	totalTime+=elapsedTime;
+	totalTime += elapsedTime;
 
 	projMatrix = perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
 
 	viewMatrix = lookAt(cameraPosition, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
-	gameObject->update();
+	for (auto iter = gameObjects.begin(); iter != gameObjects.end(); iter++)
+	{
+		(*iter)->update();
+	}
 }
 
-void renderGameObject(shared_ptr<GameObject> currentGameObject){
-	MVPMatrix = projMatrix*viewMatrix*currentGameObject->getModelMatrix();
+void renderGameObject(shared_ptr<GameObject> gameObject)
+{
+	MVPMatrix = projMatrix*viewMatrix*gameObject->getModelMatrix();
 
-
-	if (currentGameObject->getShaderProgram() > 0){
-		currentShaderProgram = gameObject->getShaderProgram();
-		glUseProgram(currentShaderProgram);
+	if (gameObject->getShaderProgram() > 0){
+		currentShaderProgam = gameObject->getShaderProgram();
+		glUseProgram(currentShaderProgam);
 	}
 
-	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
+	GLint MVPLocation = glGetUniformLocation(currentShaderProgam, "MVP");
+
+	GLint ambientLightColourLocation = glGetUniformLocation(currentShaderProgam, "ambientLightColour");
+	GLint ambientMaterialColourLocation = glGetUniformLocation(currentShaderProgam, "ambientMaterialColour");
+
+	GLint diffuseLightColourLocation = glGetUniformLocation(currentShaderProgam, "diffuseLightColour");
+	GLint diffuseLightMaterialLocation = glGetUniformLocation(currentShaderProgam, "diffuseMaterialColour");
+	GLint lightDirectionLocation = glGetUniformLocation(currentShaderProgam, "lightDirection");
+
+	GLint specularLightColourLocation = glGetUniformLocation(currentShaderProgam, "specularLightColour");
+	GLint specularLightMaterialLocation = glGetUniformLocation(currentShaderProgam, "specularMaterialColour");
+	GLint specularPowerLocation = glGetUniformLocation(currentShaderProgam, "specularPower");
+	GLint cameraPositionLocation = glGetUniformLocation(currentShaderProgam, "cameraPosition");
+
+	GLint modelLocation = glGetUniformLocation(currentShaderProgam, "Model");
+
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(gameObject->getModelMatrix()));
 
-	glBindVertexArray(currentGameObject->getVertexArrayObject());
+	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
+	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(gameObject->getAmbientMaterial()));
 
-	glDrawElements(GL_TRIANGLES, currentGameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
+	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(gameObject->getDiffuseMaterial()));
+	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
 
-	for (int i = 0; i < currentGameObject->getNumberOfChildern(); i++){
-		renderGameObject(currentGameObject->getChild(i));
+	glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
+	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(gameObject->getSpecularMaterial()));
+	glUniform1f(specularPowerLocation, gameObject->getSpecularPower());
+	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
+
+
+	glBindVertexArray(gameObject->getVertexArrayObject());
+
+	glDrawElements(GL_TRIANGLES, gameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+
+	for (int i = 0; i < gameObject->getNumberOfChildren(); i++)
+	{
+		renderGameObject(gameObject->getChild(i));
 	}
 }
 
@@ -193,7 +232,10 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	renderGameObject(gameObject);
+	for (auto iter = gameObjects.begin(); iter != gameObjects.end(); iter++)
+	{
+		renderGameObject((*iter));
+	}
 }
 
 void renderPostQuad()
@@ -207,11 +249,11 @@ void renderPostQuad()
 	glUseProgram(fullScreenShaderProgram);
 
 	GLint textureLocation = glGetUniformLocation(fullScreenShaderProgram, "texture0");
-	GLint timeLocation=glGetUniformLocation(fullScreenShaderProgram,"time");
-	GLint resolutionLocation=glGetUniformLocation(fullScreenShaderProgram,"resolution");
+	GLint timeLocation = glGetUniformLocation(fullScreenShaderProgram, "time");
+	GLint resolutionLocation = glGetUniformLocation(fullScreenShaderProgram, "resolution");
 
-	glUniform1f(timeLocation,totalTime);
-	glUniform2fv(resolutionLocation,1,value_ptr(screenResolution));
+	glUniform1f(timeLocation, totalTime);
+	glUniform2fv(resolutionLocation, 1, value_ptr(screenResolution));
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, FBOTexture);
@@ -222,8 +264,6 @@ void renderPostQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
-
-
 
 void render()
 {
